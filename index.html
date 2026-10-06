@@ -71,7 +71,8 @@ dialog:focus, dialog:focus-visible { outline: none; }
 .hero-bg { position: absolute; inset: 0; z-index: -2; overflow: hidden; }
 .hero-bg img, .hero-bg video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .hero-bg img { transform: scale(1.06); animation: settle 2.6s var(--out) forwards; }
-.hero-bg video { opacity: 0; transition: opacity 1.2s ease; }
+.hero-bg video { opacity: 0; transition: opacity .9s ease; }
+@media (max-width: 720px) { .hero-bg img, .hero-bg video { object-position: 30% 50%; } }
 .hero-bg video.on { opacity: 1; }
 .hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(12,9,7,.25) 0%, rgba(12,9,7,.35) 45%, rgba(12,9,7,.92) 100%); }
 @keyframes settle { to { transform: scale(1); } }
@@ -520,6 +521,24 @@ dlg.addEventListener("keydown", e => { if (e.key === "ArrowRight") document.getE
   // scroll rápido: las llamas se ladean y vuelven
   let sy = scrollY;
   addEventListener("scroll", () => { const v = scrollY - sy; sy = scrollY; if (Math.abs(v) > 2) flames.forEach(f => f.push(Math.max(-3, Math.min(3, v * 0.05)))); }, { passive: true });
+})();
+
+/* video de portada: solo si no hay ahorro de datos ni "reducir movimiento" */
+(() => {
+  const bg = document.querySelector(".hero-bg");
+  const ahorro = navigator.connection && navigator.connection.saveData;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || ahorro) return;
+  const v = document.createElement("video");
+  v.muted = true; v.playsInline = true; v.preload = "auto";
+  v.setAttribute("muted", ""); v.setAttribute("playsinline", ""); v.setAttribute("aria-hidden", "true");
+  v.poster = "fotos/hero.jpg";
+  v.src = matchMedia("(max-width: 720px)").matches ? "fotos/hero-movil.mp4" : "fotos/hero.mp4";
+  bg.append(v);
+  const show = () => v.classList.add("on");
+  v.addEventListener("playing", show);
+  v.loop = true; // el video ya es de ida y vuelta (acercamiento y alejamiento), así que el bucle no salta
+  v.addEventListener("error", () => v.remove());
+  new IntersectionObserver(([e]) => { if (e.isIntersecting) v.play().catch(() => {}); else v.pause(); }).observe(bg);
 })();
 
 /* tema con barrido circular desde el botón */
