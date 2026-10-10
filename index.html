@@ -19,6 +19,8 @@
   --muted: #a89a89;
   --flame: #e3ab5f;       /* llama de vela */
   --wine: #c0675a;
+  --leaf: #9db57c;        /* vegetariano */
+  --sea: #86aabb;         /* del mar */
   --shade: rgba(10, 8, 6, .72);
   --photo-shadow: none;
   --display: "Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
@@ -27,7 +29,7 @@
 }
 :root[data-theme="light"] {
   --bg: #efe8dc; --surface: #f7f2ea; --line: #d8ccb9; --ink: #2b2018; --muted: #6c5e4d;
-  --flame: #8f5719; --wine: #94382c; --shade: rgba(30, 20, 12, .5);
+  --flame: #8f5719; --wine: #94382c; --leaf: #4d6a2b; --sea: #35637a; --shade: rgba(30, 20, 12, .5);
   --photo-shadow: 0 14px 28px -18px rgba(70, 45, 20, .55); color-scheme: light;
 }
 ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
@@ -97,7 +99,7 @@ dialog:focus, dialog:focus-visible { outline: none; }
 /* filtros */
 .tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding-block: 36px 4px; }
 .tools span { font-size: 13px; color: var(--muted); margin-right: 6px; }
-.chip { padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 14px; color: var(--muted); transition: color .25s, border-color .25s, background-color .25s, transform .2s var(--out); }
+.chip { display: inline-flex; align-items: center; gap: 7px; padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 14px; color: var(--muted); transition: color .25s, border-color .25s, background-color .25s, transform .2s var(--out); }
 .chip:active { transform: scale(.94); }
 .chip[aria-pressed="true"] { color: var(--ink); border-color: var(--flame); background: color-mix(in srgb, var(--flame) 14%, transparent); }
 
@@ -107,8 +109,11 @@ section.cat { padding-block: 56px 24px; }
 .cat-head h2 { margin: 0; font: italic 400 clamp(42px, 7vw, 76px)/.9 var(--display); text-wrap: balance; }
 .cat-head p { margin: 0; color: var(--muted); max-width: 52ch; justify-self: end; text-align: right; }
 .cat-head .ttl { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-.cat-head .es { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--flame); }
 @media (max-width: 720px) { .cat-head { grid-template-columns: 1fr; } .cat-head p { justify-self: start; text-align: left; } }
+/* subsecciones de los platos fuertes */
+.sub + .sub { margin-top: 48px; }
+.sub-head { display: flex; align-items: center; gap: 16px; margin: 0 0 22px; font: italic 400 clamp(26px, 3.2vw, 32px)/1 var(--display); color: var(--flame); }
+.sub-head::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 28px 24px; }
 .dish { all: unset; cursor: pointer; display: flex; flex-direction: column; gap: 12px; min-width: 0; border-radius: 6px; }
@@ -126,29 +131,35 @@ section.cat { padding-block: 56px 24px; }
 .vt-filter .dish { view-transition-name: var(--vtn); }
 ::view-transition-group(*) { animation-duration: .55s; animation-timing-function: cubic-bezier(.22, 1, .36, 1); }
 @supports (animation-timeline: view()) {
-  .dish, .cat-head .ttl, .cat-head p, footer .wrap > div { animation: card-in linear both; animation-timeline: view(); animation-range: entry 0% entry 55%; }
+  .dish, .cat-head .ttl, .cat-head p, .sub-head, .legend, footer .wrap > div { animation: card-in linear both; animation-timeline: view(); animation-range: entry 0% entry 55%; }
   .hero-bg { animation: hero-par linear both; animation-timeline: scroll(root); animation-range: 0px 800px; }
   .hero .wrap { animation: hero-out linear both; animation-timeline: scroll(root); animation-range: 0px 520px; }
 }
 @keyframes card-in { from { opacity: 0; transform: translateY(42px) scale(.97); } }
 @keyframes hero-par { to { transform: translateY(22%) scale(1.04); } }
 @keyframes hero-out { to { opacity: 0; transform: translateY(-48px); } }
-.dish .row { display: flex; align-items: baseline; gap: 12px; }
-.dish h3 { margin: 0; font: 500 22px/1.15 var(--display); flex: 1; min-width: 0; text-wrap: balance; }
-.dish .price { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--flame); white-space: nowrap; }
+.dish .row { display: flex; align-items: flex-start; gap: 12px; }
+.dish :is(h3, h4) { margin: 0; font: 500 22px/1.15 var(--display); flex: 1; min-width: 0; text-wrap: balance; }
 .dish .es { margin: -8px 0 0; font-size: 13px; letter-spacing: .04em; color: var(--muted); }
 .dish .desc { margin: 0; font-size: 14.5px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.tags { display: flex; flex-wrap: wrap; gap: 6px; }
-.tag { font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; border: 1px solid var(--line); color: var(--muted); }
-.tag.casa { border-color: var(--flame); color: var(--flame); }
-.tag.pic { border-color: var(--wine); color: var(--wine); }
+/* íconos: vegetariano, picante, del mar, recomendado de la casa */
+.ic { width: 18px; height: 18px; flex: none; }
+.ic.veg { color: var(--leaf); } .ic.pic { color: var(--wine); } .ic.mar { color: var(--sea); } .ic.casa { color: var(--flame); }
+.dish .ics { display: flex; gap: 6px; flex: none; padding-top: 3px; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.tg { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; color: var(--muted); }
+.legend { margin-top: 64px; padding-top: 26px; border-top: 1px solid var(--line); }
+.legend h2 { margin: 0 0 14px; font: italic 400 24px/1 var(--display); }
+.legend ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 12px 30px; color: var(--muted); font-size: 14.5px; }
+.legend li { display: inline-flex; align-items: center; gap: 9px; }
+.legend .ic { width: 20px; height: 20px; }
 .dish[hidden] { display: none; }
 .empty { color: var(--muted); font-style: italic; }
 
 /* bebidas: lista más compacta */
 .grid.bev { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
 .grid.bev .dish .ph { aspect-ratio: 1 / 1; }
-.grid.bev .dish h3 { font-size: 19px; }
+.grid.bev .dish :is(h3, h4) { font-size: 19px; }
 
 /* ficha del plato (diálogo) */
 dialog { border: 0; padding: 0; width: min(920px, calc(100% - 32px)); max-height: calc(100% - 40px); background: var(--surface); color: var(--ink); border-radius: 10px; box-shadow: 0 30px 80px rgba(0,0,0,.5); overflow: auto; }
@@ -177,9 +188,7 @@ dialog[open] { animation: rise .5s var(--out); }
 .sheet p { margin: 0; }
 .sheet ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px 14px; color: var(--muted); font-size: 14.5px; }
 .sheet ul li::before { content: "·"; color: var(--flame); margin-right: 8px; }
-.sheet .foot { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.sheet .big { font: 500 30px/1 var(--display); color: var(--flame); font-variant-numeric: tabular-nums; }
-.sheet small { color: var(--muted); font-size: 12.5px; }
+.sheet .foot { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; align-items: baseline; gap: 12px; }
 .close { position: absolute; top: 12px; right: 12px; width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgba(15,11,8,.6); color: #f3eadc; cursor: pointer; font-size: 20px; line-height: 1; }
 .nav-dish { display: flex; gap: 8px; }
 .nav-dish button { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 6px 12px; cursor: pointer; color: var(--muted); font-size: 13px; }
@@ -277,7 +286,7 @@ footer p { margin: 0; }
       <h1 aria-label="LUME"><span class="ch" style="--i:0" aria-hidden="true">L</span><span class="ch" style="--i:1" aria-hidden="true">U</span><span class="ch" style="--i:2" aria-hidden="true">M</span><span class="ch" style="--i:3" aria-hidden="true">E</span></h1>
       <p class="sub">Cucina italiana a lume di candela</p>
       <p class="lead">Pastas, risottos y pizzas de tradición, con producto fresco y fuego lento. Toca cualquier plato para ver su descripción completa.</p>
-      <a class="cta" href="#antipasti">Ver la carta <span aria-hidden="true">↓</span></a>
+      <a class="cta" href="#entradas">Ver la carta <span aria-hidden="true">↓</span></a>
     </div>
   </section>
 
@@ -290,6 +299,7 @@ footer p { margin: 0; }
       <button class="chip" type="button" data-f="casa" aria-pressed="false">Recomendados de la casa</button>
     </div>
     <div id="menu"></div>
+    <section class="legend" aria-labelledby="legend-title"><h2 id="legend-title">Convenciones</h2><ul id="legend"></ul></section>
   </div>
 </main>
 
@@ -298,7 +308,7 @@ footer p { margin: 0; }
     <div><h4>Lume</h4><p>Cucina italiana a lume di candela.<br>Cocina abierta, mesas a la luz de las velas.</p></div>
     <div><h4>Horario</h4><p>Martes a jueves · 12:00 – 22:00<br>Viernes y sábado · 12:00 – 23:30<br>Domingo · 12:00 – 17:00</p></div>
     <div><h4>Reservas</h4><p>Grupos y celebraciones con menú especial.<br>Pregunta por nuestra carta de vinos.</p></div>
-    <p class="legal">Precios en pesos colombianos. Impoconsumo del 8% incluido. Si tienes alguna alergia o restricción alimentaria, avísale a tu mesero antes de ordenar. Las fotografías son de referencia.</p>
+    <p class="legal">Si tienes alguna alergia o restricción alimentaria, avísale a tu mesero antes de ordenar. Las fotografías son de referencia.</p>
   </div>
 </footer>
 
@@ -315,7 +325,6 @@ footer p { margin: 0; }
       <ul id="dlg-ing" aria-label="Ingredientes principales"></ul>
       <div class="tags" id="dlg-tags"></div>
       <div class="foot">
-        <div><div class="big" id="dlg-price"></div><small>Impoconsumo incluido</small></div>
         <div class="nav-dish"><button type="button" id="prev">← Anterior</button><button type="button" id="next">Siguiente →</button></div>
       </div>
     </div>
@@ -323,40 +332,58 @@ footer p { margin: 0; }
 </dialog>
 
 <script>
-const DATA = [{"id": "bruschetta", "cat": "Antipasti", "nombre": "Bruschetta al pomodoro", "es": "Pan tostado con tomate y albahaca", "desc": "Pan ciabatta tostado con tomate maduro, albahaca fresca, ajo y aceite de oliva extra virgen.", "precio": 10000, "ing": ["Pan ciabatta", "Tomate", "Albahaca", "Ajo", "Aceite de oliva", "Balsámico"], "tags": ["veg"], "alt": "Tres bruschettas con tomate y albahaca sobre tabla de piedra"}, {"id": "caprese", "cat": "Antipasti", "nombre": "Caprese di mozzarella", "es": "Mozzarella, tomate y albahaca", "desc": "Mozzarella fresca, tomate y tomate cherry, albahaca y reducción de balsámico.", "precio": 12000, "ing": ["Mozzarella", "Tomate", "Tomate cherry", "Albahaca", "Reducción de balsámico"], "tags": ["veg"], "alt": "Rodajas de mozzarella y tomate con albahaca en plato oscuro"}, {"id": "carpaccio", "cat": "Antipasti", "nombre": "Carpaccio di manzo", "es": "Láminas de lomo de res", "desc": "Láminas finas de lomo de res, parmesano, alcaparras, rúgula y limón.", "precio": 15000, "ing": ["Lomo de res", "Parmesano", "Alcaparras", "Rúgula", "Limón"], "tags": [], "alt": "Carpaccio de res con lascas de parmesano y rúgula"}, {"id": "arancini", "cat": "Antipasti", "nombre": "Arancini di riso", "es": "Croquetas de risotto rellenas de queso", "desc": "Croquetas de risotto al azafrán rellenas de mozzarella, con salsa de tomate.", "precio": 20000, "ing": ["Arroz arborio", "Azafrán", "Mozzarella", "Parmesano", "Salsa de tomate"], "tags": [], "alt": "Arancini dorados, uno abierto con queso fundido"}, {"id": "calamari", "cat": "Antipasti", "nombre": "Calamari fritti", "es": "Calamares fritos con alioli", "desc": "Anillos de calamar fritos, alioli de ajo, perejil y limón.", "precio": 16000, "ing": ["Calamar", "Alioli de ajo", "Perejil", "Limón"], "tags": ["mar"], "alt": "Anillos de calamar fritos con limón y alioli"}, {"id": "carbonara", "cat": "Primi", "nombre": "Spaghetti alla carbonara", "es": "Espagueti con huevo, parmesano y tocineta", "desc": "Espagueti con yema de huevo, parmesano, tocineta crocante y pimienta negra recién molida.", "precio": 18000, "ing": ["Espagueti", "Yema de huevo", "Parmesano", "Tocineta", "Pimienta negra"], "tags": ["casa"], "alt": "Espagueti a la carbonara con tocineta en plato de piedra"}, {"id": "fettuccine", "cat": "Primi", "nombre": "Fettuccine Alfredo", "es": "Pasta en salsa cremosa de parmesano", "desc": "Fettuccine en salsa cremosa de mantequilla y parmesano con un toque de nuez moscada.", "precio": 19000, "ing": ["Fettuccine", "Crema de leche", "Mantequilla", "Parmesano", "Nuez moscada"], "tags": ["veg"], "alt": "Fettuccine en salsa cremosa con parmesano"}, {"id": "lasagna", "cat": "Primi", "nombre": "Lasagna alla bolognese", "es": "Lasaña de carne gratinada", "desc": "Capas de pasta, ragú boloñés, bechamel y mozzarella gratinada al horno.", "precio": 30000, "ing": ["Pasta de lasaña", "Ragú boloñés", "Bechamel", "Mozzarella", "Parmesano"], "tags": [], "alt": "Porción de lasaña mostrando sus capas"}, {"id": "arrabbiata", "cat": "Primi", "nombre": "Penne all'arrabbiata", "es": "Penne en salsa de tomate picante", "desc": "Penne en salsa de tomate picante con ajo, ají en escamas y perejil.", "precio": 16000, "ing": ["Penne", "Salsa de tomate", "Ajo", "Ají", "Parmesano"], "tags": ["veg", "pic"], "alt": "Penne en salsa roja con perejil"}, {"id": "risotto", "cat": "Primi", "nombre": "Risotto ai funghi", "es": "Risotto cremoso de champiñones", "desc": "Arroz arborio cremoso con champiñón portobello y blanco, vino blanco, tomillo y parmesano.", "precio": 30000, "ing": ["Arroz arborio", "Champiñón portobello", "Vino blanco", "Tomillo", "Parmesano"], "tags": [], "alt": "Risotto de champiñones en plato hondo"}, {"id": "gamberi", "cat": "Primi", "nombre": "Spaghetti ai gamberi", "es": "Espagueti con camarones al ajillo", "desc": "Espagueti con camarones salteados al ajo, vino blanco, tomate cherry y ralladura de limón.", "precio": 26000, "ing": ["Espagueti", "Camarón", "Ajo", "Tomate cherry", "Vino blanco", "Limón"], "tags": ["mar"], "alt": "Espagueti con camarones y tomate cherry"}, {"id": "margherita", "cat": "Secondi", "nombre": "Pizza Margherita", "es": "Pizza de tomate, mozzarella y albahaca", "desc": "Masa de fermentación lenta, salsa de tomate, mozzarella fundida, albahaca y aceite de oliva.", "precio": 18000, "ing": ["Masa de pizza", "Salsa de tomate", "Mozzarella", "Albahaca", "Aceite de oliva"], "tags": ["veg"], "alt": "Pizza Margherita entera sobre tabla de madera"}, {"id": "parmigiana", "cat": "Secondi", "nombre": "Pollo alla parmigiana", "es": "Pollo apanado gratinado con espagueti", "desc": "Pechuga apanada gratinada con salsa de tomate, mozzarella y parmesano, con espagueti.", "precio": 23000, "ing": ["Pechuga de pollo", "Salsa de tomate", "Mozzarella", "Parmesano", "Espagueti"], "tags": [], "alt": "Pollo a la parmesana gratinado con espagueti"}, {"id": "ossobuco", "cat": "Secondi", "nombre": "Ossobuco alla milanese", "es": "Morrillo de res braseado con risotto", "desc": "Morrillo de res braseado al vino con verduras, gremolata de limón y risotto al azafrán.", "precio": 34000, "ing": ["Morrillo de res", "Vino blanco", "Verduras", "Gremolata", "Risotto al azafrán"], "tags": ["casa"], "alt": "Ossobuco sobre risotto con gremolata"}, {"id": "tiramisu", "cat": "Dolci", "nombre": "Tiramisú", "es": "Postre de café y crema", "desc": "Bizcocho de la casa empapado en café, crema de queso y chocolate rallado.", "precio": 10000, "ing": ["Bizcocho", "Café", "Crema de queso", "Chocolate"], "tags": ["veg", "casa"], "alt": "Porción de tiramisú con chocolate"}, {"id": "pannacotta", "cat": "Dolci", "nombre": "Panna cotta ai frutti rossi", "es": "Crema cocida con frutos rojos", "desc": "Crema cocida de vainilla con coulis de fresa y mora.", "precio": 9000, "ing": ["Crema de leche", "Vainilla", "Fresa", "Mora"], "tags": [], "alt": "Panna cotta con salsa de frutos rojos"}, {"id": "affogato", "cat": "Dolci", "nombre": "Affogato al caffè", "es": "Helado bañado en café", "desc": "Helado de vainilla bañado en espresso caliente con almendra tostada.", "precio": 8000, "ing": ["Helado de vainilla", "Espresso", "Almendra"], "tags": ["veg"], "alt": "Helado de vainilla con espresso"}, {"id": "tortacaprese", "cat": "Dolci", "nombre": "Torta caprese", "es": "Torta de chocolate y almendra", "desc": "Torta húmeda de chocolate y almendra, sin harina, con crema batida y fresas.", "precio": 12000, "ing": ["Chocolate", "Almendra", "Mantequilla", "Crema batida", "Fresas"], "tags": ["veg"], "alt": "Porción de torta de chocolate con crema y fresas"}, {"id": "limonata", "cat": "Bevande", "nombre": "Limonata alla menta", "es": "Limonada con hierbabuena", "desc": "Limonada natural con hierbabuena fresca.", "precio": 4000, "ing": ["Limón", "Hierbabuena", "Azúcar"], "tags": ["veg"], "alt": "Vaso de limonada con hierbabuena"}, {"id": "soda", "cat": "Bevande", "nombre": "Soda italiana ai frutti rossi", "es": "Soda de frutos rojos", "desc": "Soda con jarabe de frutos rojos y un toque de crema.", "precio": 5000, "ing": ["Frutos rojos", "Soda", "Crema"], "tags": ["veg"], "alt": "Soda italiana roja con frutas"}, {"id": "espresso", "cat": "Bevande", "nombre": "Espresso", "es": "Café corto", "desc": "Café colombiano en extracción corta, con crema densa.", "precio": 3000, "ing": ["Café colombiano"], "tags": ["veg"], "alt": "Taza de espresso"}, {"id": "cappuccino", "cat": "Bevande", "nombre": "Cappuccino", "es": "Café con leche espumada", "desc": "Espresso con leche texturizada y chocolate.", "precio": 4000, "ing": ["Espresso", "Leche", "Chocolate"], "tags": ["veg"], "alt": "Cappuccino con arte latte"}, {"id": "chianti", "cat": "Bevande", "nombre": "Calice di Chianti", "es": "Copa de vino tinto de la Toscana", "desc": "Copa de vino tinto Chianti de la Toscana.", "precio": 29000, "ing": ["150 ml", "Vino tinto Chianti"], "tags": [], "alt": "Copa de vino tinto junto a una botella de Chianti"}];
+const DATA = [{"id": "bruschetta", "cat": "Antipasti", "nombre": "Bruschetta de tomate", "es": "Pan tostado con tomate y albahaca", "desc": "Pan ciabatta tostado con tomate maduro, albahaca fresca, ajo y aceite de oliva extra virgen.", "sub": "", "ing": ["Pan ciabatta", "Tomate", "Albahaca", "Ajo", "Aceite de oliva", "Balsámico"], "tags": ["veg"], "alt": "Tres bruschettas con tomate y albahaca sobre tabla de piedra"}, {"id": "caprese", "cat": "Antipasti", "nombre": "Ensalada caprese", "es": "Mozzarella, tomate y albahaca", "desc": "Mozzarella fresca, tomate y tomate cherry, albahaca y reducción de balsámico.", "sub": "", "ing": ["Mozzarella", "Tomate", "Tomate cherry", "Albahaca", "Reducción de balsámico"], "tags": ["veg"], "alt": "Rodajas de mozzarella y tomate con albahaca en plato oscuro"}, {"id": "carpaccio", "cat": "Antipasti", "nombre": "Carpaccio de res", "es": "Láminas finas de lomo con parmesano", "desc": "Láminas finas de lomo de res, parmesano, alcaparras, rúgula y limón.", "sub": "", "ing": ["Lomo de res", "Parmesano", "Alcaparras", "Rúgula", "Limón"], "tags": [], "alt": "Carpaccio de res con lascas de parmesano y rúgula"}, {"id": "arancini", "cat": "Antipasti", "nombre": "Arancini de queso", "es": "Croquetas de risotto rellenas de queso", "desc": "Croquetas de risotto al azafrán rellenas de mozzarella, con salsa de tomate.", "sub": "", "ing": ["Arroz arborio", "Azafrán", "Mozzarella", "Parmesano", "Salsa de tomate"], "tags": [], "alt": "Arancini dorados, uno abierto con queso fundido"}, {"id": "calamari", "cat": "Antipasti", "nombre": "Calamares fritos", "es": "Anillos de calamar con alioli de ajo", "desc": "Anillos de calamar fritos, alioli de ajo, perejil y limón.", "sub": "", "ing": ["Calamar", "Alioli de ajo", "Perejil", "Limón"], "tags": ["mar"], "alt": "Anillos de calamar fritos con limón y alioli"}, {"id": "carbonara", "cat": "Primi", "nombre": "Espagueti a la carbonara", "es": "Con yema de huevo, parmesano y tocineta", "desc": "Espagueti con yema de huevo, parmesano, tocineta crocante y pimienta negra recién molida.", "sub": "Pastas", "ing": ["Espagueti", "Yema de huevo", "Parmesano", "Tocineta", "Pimienta negra"], "tags": ["casa"], "alt": "Espagueti a la carbonara con tocineta en plato de piedra"}, {"id": "fettuccine", "cat": "Primi", "nombre": "Fettuccine Alfredo", "es": "Pasta en salsa cremosa de parmesano", "desc": "Fettuccine en salsa cremosa de mantequilla y parmesano con un toque de nuez moscada.", "sub": "Pastas", "ing": ["Fettuccine", "Crema de leche", "Mantequilla", "Parmesano", "Nuez moscada"], "tags": ["veg"], "alt": "Fettuccine en salsa cremosa con parmesano"}, {"id": "lasagna", "cat": "Primi", "nombre": "Lasaña a la boloñesa", "es": "Ragú de carne y bechamel, gratinada", "desc": "Capas de pasta, ragú boloñés, bechamel y mozzarella gratinada al horno.", "sub": "Horneados", "ing": ["Pasta de lasaña", "Ragú boloñés", "Bechamel", "Mozzarella", "Parmesano"], "tags": [], "alt": "Porción de lasaña mostrando sus capas"}, {"id": "arrabbiata", "cat": "Primi", "nombre": "Penne a la arrabbiata", "es": "Penne en salsa de tomate picante", "desc": "Penne en salsa de tomate picante con ajo, ají en escamas y perejil.", "sub": "Pastas", "ing": ["Penne", "Salsa de tomate", "Ajo", "Ají", "Parmesano"], "tags": ["veg", "pic"], "alt": "Penne en salsa roja con perejil"}, {"id": "risotto", "cat": "Primi", "nombre": "Risotto de champiñones", "es": "Cremoso, con vino blanco y tomillo", "desc": "Arroz arborio cremoso con champiñón portobello y blanco, vino blanco, tomillo y parmesano.", "sub": "Arroces", "ing": ["Arroz arborio", "Champiñón portobello", "Vino blanco", "Tomillo", "Parmesano"], "tags": [], "alt": "Risotto de champiñones en plato hondo"}, {"id": "gamberi", "cat": "Primi", "nombre": "Espagueti con camarones", "es": "Camarones al ajillo con tomate cherry", "desc": "Espagueti con camarones salteados al ajo, vino blanco, tomate cherry y ralladura de limón.", "sub": "Pastas", "ing": ["Espagueti", "Camarón", "Ajo", "Tomate cherry", "Vino blanco", "Limón"], "tags": ["mar"], "alt": "Espagueti con camarones y tomate cherry"}, {"id": "margherita", "cat": "Secondi", "nombre": "Pizza Margarita", "es": "Tomate, mozzarella y albahaca", "desc": "Masa de fermentación lenta, salsa de tomate, mozzarella fundida, albahaca y aceite de oliva.", "sub": "Horneados", "ing": ["Masa de pizza", "Salsa de tomate", "Mozzarella", "Albahaca", "Aceite de oliva"], "tags": ["veg"], "alt": "Pizza Margherita entera sobre tabla de madera"}, {"id": "parmigiana", "cat": "Secondi", "nombre": "Pollo a la parmesana", "es": "Pollo apanado gratinado con espagueti", "desc": "Pechuga apanada gratinada con salsa de tomate, mozzarella y parmesano, con espagueti.", "sub": "Horneados", "ing": ["Pechuga de pollo", "Salsa de tomate", "Mozzarella", "Parmesano", "Espagueti"], "tags": [], "alt": "Pollo a la parmesana gratinado con espagueti"}, {"id": "ossobuco", "cat": "Secondi", "nombre": "Ossobuco a la milanesa", "es": "Morrillo de res braseado con risotto", "desc": "Morrillo de res braseado al vino con verduras, gremolata de limón y risotto al azafrán.", "sub": "Arroces", "ing": ["Morrillo de res", "Vino blanco", "Verduras", "Gremolata", "Risotto al azafrán"], "tags": ["casa"], "alt": "Ossobuco sobre risotto con gremolata"}, {"id": "tiramisu", "cat": "Dolci", "nombre": "Tiramisú", "es": "Postre de café y crema", "desc": "Bizcocho de la casa empapado en café, crema de queso y chocolate rallado.", "sub": "", "ing": ["Bizcocho", "Café", "Crema de queso", "Chocolate"], "tags": ["veg", "casa"], "alt": "Porción de tiramisú con chocolate"}, {"id": "pannacotta", "cat": "Dolci", "nombre": "Panna cotta de frutos rojos", "es": "Crema cocida de vainilla", "desc": "Crema cocida de vainilla con coulis de fresa y mora.", "sub": "", "ing": ["Crema de leche", "Vainilla", "Fresa", "Mora"], "tags": [], "alt": "Panna cotta con salsa de frutos rojos"}, {"id": "affogato", "cat": "Dolci", "nombre": "Affogato al café", "es": "Helado bañado en café", "desc": "Helado de vainilla bañado en espresso caliente con almendra tostada.", "sub": "", "ing": ["Helado de vainilla", "Espresso", "Almendra"], "tags": ["veg"], "alt": "Helado de vainilla con espresso"}, {"id": "tortacaprese", "cat": "Dolci", "nombre": "Torta caprese", "es": "Torta de chocolate y almendra", "desc": "Torta húmeda de chocolate y almendra, sin harina, con crema batida y fresas.", "sub": "", "ing": ["Chocolate", "Almendra", "Mantequilla", "Crema batida", "Fresas"], "tags": ["veg"], "alt": "Porción de torta de chocolate con crema y fresas"}, {"id": "limonata", "cat": "Bevande", "nombre": "Limonada de hierbabuena", "es": "Natural y refrescante", "desc": "Limonada natural con hierbabuena fresca.", "sub": "", "ing": ["Limón", "Hierbabuena", "Azúcar"], "tags": ["veg"], "alt": "Vaso de limonada con hierbabuena"}, {"id": "soda", "cat": "Bevande", "nombre": "Soda italiana de frutos rojos", "es": "Con jarabe de frutos rojos y crema", "desc": "Soda con jarabe de frutos rojos y un toque de crema.", "sub": "", "ing": ["Frutos rojos", "Soda", "Crema"], "tags": ["veg"], "alt": "Soda italiana roja con frutas"}, {"id": "espresso", "cat": "Bevande", "nombre": "Espresso", "es": "Café corto", "desc": "Café colombiano en extracción corta, con crema densa.", "sub": "", "ing": ["Café colombiano"], "tags": ["veg"], "alt": "Taza de espresso"}, {"id": "cappuccino", "cat": "Bevande", "nombre": "Cappuccino", "es": "Café con leche espumada", "desc": "Espresso con leche texturizada y chocolate.", "sub": "", "ing": ["Espresso", "Leche", "Chocolate"], "tags": ["veg"], "alt": "Cappuccino con arte latte"}, {"id": "chianti", "cat": "Bevande", "nombre": "Copa de vino Chianti", "es": "Vino tinto de la Toscana", "desc": "Copa de vino tinto Chianti de la Toscana.", "sub": "", "ing": ["150 ml", "Vino tinto Chianti"], "tags": [], "alt": "Copa de vino tinto junto a una botella de Chianti"}];
+// "keys" son las categorías de las recetas (recetas.py); "subs" agrupa los platos fuertes por su campo "sub".
 const CATS = [
-  { id: "antipasti", key: "Antipasti", it: "Antipasti", es: "Entradas", note: "Para abrir la mesa y compartir mientras llega el vino." },
-  { id: "primi", key: "Primi", it: "Primi piatti", es: "Platos fuertes · pastas y risottos", note: "Pasta cocida al dente y risottos hechos al momento, sin atajos." },
-  { id: "secondi", key: "Secondi", it: "Secondi piatti", es: "Platos fuertes · horno y brasa", note: "Pizza en horno de piedra y carnes de cocción lenta." },
-  { id: "dolci", key: "Dolci", it: "Dolci", es: "Postres", note: "La pastelería de la casa, hecha cada mañana." },
-  { id: "bevande", key: "Bevande", it: "Bevande", es: "Bebidas", note: "Café italiano, bebidas de la casa y vino de la Toscana." }
+  { id: "entradas", keys: ["Antipasti"], title: "Entradas", note: "Para abrir la mesa y compartir mientras llega el vino." },
+  { id: "fuertes", keys: ["Primi", "Secondi"], title: "Platos fuertes", note: "Pasta al dente, risottos hechos al momento y gratinados de horno.", subs: ["Pastas", "Arroces", "Horneados"] },
+  { id: "postres", keys: ["Dolci"], title: "Postres" },
+  { id: "bebidas", keys: ["Bevande"], title: "Bebidas", note: "Café italiano, bebidas de la casa y vino de la Toscana." }
 ];
-const TAGS = { veg: "Vegetariano", mar: "Del mar", pic: "Picante", casa: "De la casa" };
-const fmt = n => "$ " + n.toLocaleString("es-CO");
+const ICONS = {
+  veg: { label: "Vegetariano", path: '<path d="M5 19C5 10 10.5 4.5 19.5 4.5 19.5 13.5 14 19 5 19Z"/><path d="M5 19l8-8"/>' },
+  pic: { label: "Picante", path: '<path d="M14.6 8.6c2.6-.3 4.2 1.8 3.7 4.5C17.5 17.6 12 20.6 4.5 20c5-2.4 7.7-6.2 8.4-9.6.2-1 .8-1.7 1.7-1.8Z"/><path d="M14.6 8.6c0-2.2 1-3.8 3.2-4.3"/>' },
+  mar: { label: "Del mar", path: '<path d="M8 12c2-3.5 5-5 8-5 2.5 0 4.5 2 5.5 5-1 3-3 5-5.5 5-3 0-6-1.5-8-5Z"/><path d="M8 12 3 8.5v7Z"/><circle cx="17" cy="11" r=".7" fill="currentColor"/>' },
+  casa: { label: "Recomendado de la casa", path: '<path d="M12 3c3 4 6 6.8 6 11a6 6 0 0 1-12 0c0-3 2.3-5 3.4-7.7.5 2.4 1.6 3.6 3 4.3.5-2.8.4-5.2-.4-7.6Z"/>' }
+};
+// deco = el texto ya lo dice al lado, así que el lector de pantalla no lo repite
+const icon = (t, deco) => {
+  const { label, path } = ICONS[t];
+  const a11y = deco ? 'aria-hidden="true">' : `role="img" aria-label="${label}"><title>${label}</title>`;
+  return `<svg class="ic ${t}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" ${a11y}${path}</svg>`;
+};
 const menu = document.getElementById("menu"), nav = document.getElementById("nav");
 let order = [];
 
 CATS.forEach(c => {
-  const items = DATA.filter(d => d.cat === c.key);
-  const a = document.createElement("a"); a.href = "#" + c.id; a.textContent = c.it.replace(" piatti", ""); a.dataset.id = c.id; nav.append(a);
+  const items = DATA.filter(d => c.keys.includes(d.cat));
+  const H = c.subs ? "h4" : "h3";
+  const a = document.createElement("a"); a.href = "#" + c.id; a.textContent = c.title; a.dataset.id = c.id; nav.append(a);
   const s = document.createElement("section"); s.className = "cat"; s.id = c.id;
-  s.innerHTML = `<div class="cat-head"><div class="ttl"><span class="es">${c.es}</span><h2>${c.it}</h2></div><p>${c.note}</p></div>
-    <div class="grid ${c.id === "bevande" ? "bev" : ""}"></div><p class="empty" hidden>No hay platos con este filtro en esta sección.</p>`;
-  const g = s.querySelector(".grid");
-  items.forEach(d => {
-    order.push(d);
-    const b = document.createElement("button"); b.type = "button"; b.className = "dish"; b.dataset.id = d.id; b.dataset.tags = d.tags.join(" "); b.style.setProperty("--vtn", "d-" + d.id);
-    b.innerHTML = `<div class="ph"><img src="fotos/${d.id}.jpg" alt="${d.alt}" loading="lazy" width="800" height="600"></div>
-      <div class="row"><h3>${d.nombre}</h3><span class="price">${fmt(d.precio)}</span></div>
-      <p class="es">${d.es}</p><p class="desc">${d.desc}</p>
-      ${d.tags.length ? `<div class="tags">${d.tags.map(t => `<span class="tag ${t}">${TAGS[t]}</span>`).join("")}</div>` : ""}`;
-    b.addEventListener("click", () => openDish(d.id));
-    const im = b.querySelector("img"); const ok = () => im.classList.add("ok");
-    if (im.complete && im.naturalWidth) ok(); else { im.addEventListener("load", ok, { once: true }); im.addEventListener("error", ok, { once: true }); }
-    g.append(b);
+  s.innerHTML = `<div class="cat-head"><div class="ttl"><h2>${c.title}</h2></div>${c.note ? `<p>${c.note}</p>` : ""}</div>
+    <p class="empty" hidden>No hay platos con este filtro en esta sección.</p>`;
+  const groups = c.subs ? c.subs.map(name => ({ name, items: items.filter(d => d.sub === name) })) : [{ items }];
+  groups.forEach(gr => {
+    const box = document.createElement("div"); box.className = "sub";
+    box.innerHTML = `${gr.name ? `<h3 class="sub-head">${gr.name}</h3>` : ""}<div class="grid ${c.id === "bebidas" ? "bev" : ""}"></div>`;
+    const g = box.querySelector(".grid");
+    gr.items.forEach(d => {
+      order.push(d);
+      const b = document.createElement("button"); b.type = "button"; b.className = "dish"; b.dataset.id = d.id; b.dataset.tags = d.tags.join(" "); b.style.setProperty("--vtn", "d-" + d.id);
+      b.innerHTML = `<div class="ph"><img src="fotos/${d.id}.jpg" alt="${d.alt}" loading="lazy" width="800" height="600"></div>
+        <div class="row"><${H}>${d.nombre}</${H}>${d.tags.length ? `<span class="ics">${d.tags.map(t => icon(t)).join("")}</span>` : ""}</div>
+        <p class="es">${d.es}</p><p class="desc">${d.desc}</p>`;
+      b.addEventListener("click", () => openDish(d.id));
+      const im = b.querySelector("img"); const ok = () => im.classList.add("ok");
+      if (im.complete && im.naturalWidth) ok(); else { im.addEventListener("load", ok, { once: true }); im.addEventListener("error", ok, { once: true }); }
+      g.append(b);
+    });
+    s.querySelector(".empty").before(box);
   });
   menu.append(s);
 });
+document.getElementById("legend").innerHTML = Object.keys(ICONS).map(t => `<li>${icon(t, true)}${ICONS[t].label}</li>`).join("");
+document.querySelectorAll(".chip").forEach(ch => { if (ICONS[ch.dataset.f]) ch.insertAdjacentHTML("afterbegin", icon(ch.dataset.f, true)); });
 
 /* filtros */
 document.querySelectorAll(".chip").forEach(ch => ch.addEventListener("click", () => {
@@ -366,7 +393,11 @@ document.querySelectorAll(".chip").forEach(ch => ch.addEventListener("click", ()
     document.querySelectorAll(".chip").forEach(o => o.setAttribute("aria-pressed", o === ch));
     document.querySelectorAll("section.cat").forEach(sec => {
       let shown = 0;
-      sec.querySelectorAll(".dish").forEach(el => { const ok = f === "todo" || el.dataset.tags.split(" ").includes(f); el.hidden = !ok; if (ok) shown++; });
+      sec.querySelectorAll(".sub").forEach(box => {
+        let n = 0;
+        box.querySelectorAll(".dish").forEach(el => { const ok = f === "todo" || el.dataset.tags.split(" ").includes(f); el.hidden = !ok; if (ok) n++; });
+        box.hidden = n === 0; shown += n;
+      });
       sec.querySelector(".empty").hidden = shown > 0;
     });
   };
@@ -378,7 +409,7 @@ document.querySelectorAll(".chip").forEach(ch => ch.addEventListener("click", ()
 
 nav.addEventListener("click", e => { const a = e.target.closest("a"); if (!a) return; e.preventDefault();
   document.getElementById(a.dataset.id).scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); });
-document.querySelector(".cta").addEventListener("click", e => { e.preventDefault(); document.getElementById("antipasti").scrollIntoView({ behavior: "smooth" }); });
+document.querySelector(".cta").addEventListener("click", e => { e.preventDefault(); document.getElementById("entradas").scrollIntoView({ behavior: "smooth" }); });
 /* sección activa en la barra */
 const links = [...nav.querySelectorAll("a")];
 const pill = document.createElement("span"); pill.className = "pill"; nav.prepend(pill);
@@ -399,16 +430,15 @@ let cur = 0;
 function openDish(id, dir = 0) {
   const wasOpen = dlg.open;
   cur = order.findIndex(d => d.id === id);
-  const d = order[cur], c = CATS.find(c => c.key === d.cat);
+  const d = order[cur], c = CATS.find(c => c.keys.includes(d.cat));
   document.getElementById("dlg-img").src = `fotos/${d.id}.jpg`;
   document.getElementById("dlg-img").alt = d.alt;
-  document.getElementById("dlg-cat").textContent = `${c.it} · ${c.es}`;
+  document.getElementById("dlg-cat").textContent = d.sub ? `${c.title} · ${d.sub}` : c.title;
   document.getElementById("dlg-title").textContent = d.nombre;
   document.getElementById("dlg-es").textContent = d.es;
   document.getElementById("dlg-desc").textContent = d.desc;
   document.getElementById("dlg-ing").innerHTML = d.ing.map(i => `<li>${i}</li>`).join("");
-  document.getElementById("dlg-tags").innerHTML = d.tags.map(t => `<span class="tag ${t}">${TAGS[t]}</span>`).join("");
-  document.getElementById("dlg-price").textContent = fmt(d.precio);
+  document.getElementById("dlg-tags").innerHTML = d.tags.map(t => `<span class="tg">${icon(t, true)}${ICONS[t].label}</span>`).join("");
   if (!dlg.open) { dlg.showModal(); dlg.scrollTop = 0; document.documentElement.classList.add("lock"); }
   else if (wasOpen && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
     const ease = "cubic-bezier(.22, 1, .36, 1)";
