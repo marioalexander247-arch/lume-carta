@@ -33,9 +33,12 @@
   --photo-shadow: 0 14px 28px -18px rgba(70, 45, 20, .55); color-scheme: light;
 }
 ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+/* cambio de tema: el círculo lo dibuja el CSS desde el primer cuadro (sin destello en el celular) */
+.vt-theme::view-transition-new(root) { animation: theme-sweep .48s cubic-bezier(.4, 0, .2, 1) both; }
+@keyframes theme-sweep { from { clip-path: circle(0 at var(--vt-x) var(--vt-y)); } to { clip-path: circle(var(--vt-r) at var(--vt-x) var(--vt-y)); } }
 
 * { box-sizing: border-box; }
-html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 72px); }
+html { scrollbar-gutter: stable; scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 72px); }
 body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.55 var(--text); -webkit-font-smoothing: antialiased; }
 img { max-width: 100%; display: block; }
 button { font: inherit; color: inherit; }
@@ -50,6 +53,11 @@ dialog:focus, dialog:focus-visible { outline: none; }
 
 /* barra */
 .bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); }
+/* cristal: deja ver la carta difuminada al pasar por debajo */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .bar { background: color-mix(in srgb, var(--bg) 68%, transparent); -webkit-backdrop-filter: blur(20px) saturate(170%); backdrop-filter: blur(20px) saturate(170%);
+    border-bottom-color: color-mix(in srgb, var(--line) 75%, transparent); box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .04), 0 10px 30px -22px rgba(0, 0, 0, .55); }
+}
 .bar .wrap { display: flex; align-items: center; gap: 20px; height: 60px; }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); flex: none; }
 .brand .flame { width: 30px; height: 35px; margin: -4px -6px -4px -8px; }
@@ -190,9 +198,20 @@ dialog[open] { animation: rise .5s var(--out); }
 .sheet ul li::before { content: "·"; color: var(--flame); margin-right: 8px; }
 .sheet .foot { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; align-items: baseline; gap: 12px; }
 .close { position: absolute; top: 12px; right: 12px; width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgba(15,11,8,.6); color: #f3eadc; cursor: pointer; font-size: 20px; line-height: 1; }
-.nav-dish { display: flex; gap: 8px; }
-.nav-dish button { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 6px 12px; cursor: pointer; color: var(--muted); font-size: 13px; }
-.nav-dish button:hover { color: var(--ink); border-color: var(--muted); }
+/* anterior / siguiente: flecha fina de pluma dentro de un círculo + nombre del plato */
+.nav-dish { flex: 1; display: flex; justify-content: space-between; gap: 16px; min-width: 0; }
+.nav-dish button { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 4px 0; border: 0; background: none; cursor: pointer; color: var(--muted); text-align: left; }
+.nav-dish #next { text-align: right; }
+.nav-dish .arr { flex: none; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); transition: border-color .3s, color .3s, background .3s; }
+.nav-dish .arr svg { width: 24px; height: 10px; fill: none; stroke: currentColor; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; transition: transform .45s var(--out); }
+.nav-dish #prev .arr svg { scale: -1 1; }
+.nav-dish .lbl { display: grid; gap: 3px; min-width: 0; }
+.nav-dish small { font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase; }
+.nav-dish b { font: 400 16px/1.15 var(--display); color: var(--ink); text-wrap: balance; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+@media (hover: hover) {
+  .nav-dish button:hover .arr { border-color: var(--flame); color: var(--flame); background: color-mix(in srgb, var(--flame) 10%, transparent); }
+  .nav-dish #next:hover .arr svg { transform: translateX(3px); } .nav-dish #prev:hover .arr svg { transform: translateX(-3px); }
+}
 @media (max-width: 720px) {
   .sheet { grid-template-columns: 1fr; } .sheet img { min-height: 0; aspect-ratio: 4/3; } .sheet .body { padding: 24px 20px calc(24px + env(safe-area-inset-bottom, 0px)); }
   dialog { width: 100%; max-width: 100%; margin: auto 0 0; max-height: 92dvh; border-radius: 18px 18px 0 0; box-shadow: 0 -12px 40px rgba(0,0,0,.45); will-change: transform; }
@@ -325,7 +344,10 @@ footer p { margin: 0; }
       <ul id="dlg-ing" aria-label="Ingredientes principales"></ul>
       <div class="tags" id="dlg-tags"></div>
       <div class="foot">
-        <div class="nav-dish"><button type="button" id="prev">← Anterior</button><button type="button" id="next">Siguiente →</button></div>
+        <div class="nav-dish">
+          <button type="button" id="prev"><span class="arr"><svg viewBox="0 0 34 12" aria-hidden="true" focusable="false"><path d="M1 6h31M26 1.5 32 6l-6 4.5"/></svg></span><span class="lbl"><small>Anterior</small><b id="prev-name"></b></span></button>
+          <button type="button" id="next"><span class="lbl"><small>Siguiente</small><b id="next-name"></b></span><span class="arr"><svg viewBox="0 0 34 12" aria-hidden="true" focusable="false"><path d="M1 6h31M26 1.5 32 6l-6 4.5"/></svg></span></button>
+        </div>
       </div>
     </div>
   </div>
@@ -439,6 +461,8 @@ function openDish(id, dir = 0) {
   document.getElementById("dlg-desc").textContent = d.desc;
   document.getElementById("dlg-ing").innerHTML = d.ing.map(i => `<li>${i}</li>`).join("");
   document.getElementById("dlg-tags").innerHTML = d.tags.map(t => `<span class="tg">${icon(t, true)}${ICONS[t].label}</span>`).join("");
+  document.getElementById("prev-name").textContent = order[(cur - 1 + order.length) % order.length].nombre;
+  document.getElementById("next-name").textContent = order[(cur + 1) % order.length].nombre;
   if (!dlg.open) { dlg.showModal(); dlg.scrollTop = 0; document.documentElement.classList.add("lock"); }
   else if (wasOpen && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
     const ease = "cubic-bezier(.22, 1, .36, 1)";
@@ -588,12 +612,14 @@ function toggleThemeFrom(button) {
   const r = button.getBoundingClientRect();
   const x = r.left + r.width / 2, y = r.top + r.height / 2;
   const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-  document.startViewTransition(apply).ready.then(() =>
-    document.documentElement.animate(
-      { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
-      { duration: 480, easing: "cubic-bezier(0.4, 0, 0.2, 1)", pseudoElement: "::view-transition-new(root)" }
-    )
-  ).catch(() => {});
+  // El CSS (.vt-theme) anima el círculo desde el primer cuadro; con .animate() en .ready
+  // el celular alcanzaba a pintar un cuadro con el tema nuevo completo (parpadeo del header).
+  const root = document.documentElement;
+  root.style.setProperty("--vt-x", x + "px");
+  root.style.setProperty("--vt-y", y + "px");
+  root.style.setProperty("--vt-r", Math.ceil(radius) + "px");
+  root.classList.add("vt-theme");
+  document.startViewTransition(apply).finished.finally(() => root.classList.remove("vt-theme"));
 }
 document.getElementById("theme").addEventListener("click", e => toggleThemeFrom(e.currentTarget));
 </script>
