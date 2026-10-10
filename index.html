@@ -36,13 +36,9 @@
 /* cambio de tema: el círculo lo dibuja el CSS desde el primer cuadro (sin destello en el celular) */
 .vt-theme::view-transition-new(root) { animation: theme-sweep .48s cubic-bezier(.4, 0, .2, 1) both; }
 @keyframes theme-sweep { from { clip-path: circle(0 at var(--vt-x) var(--vt-y)); } to { clip-path: circle(var(--vt-r) at var(--vt-x) var(--vt-y)); } }
-/* el header va en su propia captura: en el celular, dentro de la captura de la página, el header sticky
-   se pintaba arriba del todo (en su sitio sin scroll). Aparte, el navegador lo deja donde está en pantalla. */
-.vt-theme .bar { view-transition-name: lume-bar; background: var(--bg); }
-.vt-theme::view-transition-group(lume-bar) { animation: none; }
-.vt-theme::view-transition-old(lume-bar) { animation: none; }
-.vt-theme::view-transition-new(lume-bar) { animation: theme-sweep-bar .48s cubic-bezier(.4, 0, .2, 1) both; mix-blend-mode: normal; }
-@keyframes theme-sweep-bar { from { clip-path: circle(0 at var(--vt-x) var(--vt-by)); } to { clip-path: circle(var(--vt-r) at var(--vt-x) var(--vt-by)); } }
+/* el header (fixed) va dentro de la captura de la página; sin blur mientras dura el barrido
+   (algunos celulares no capturan bien el backdrop-filter) */
+.vt-theme .bar { background: var(--bg); -webkit-backdrop-filter: none; backdrop-filter: none; }
 
 * { box-sizing: border-box; }
 html { scrollbar-gutter: stable; scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 72px); }
@@ -59,7 +55,10 @@ dialog:focus, dialog:focus-visible { outline: none; }
 .wrap { max-width: 1180px; margin: 0 auto; padding-inline: clamp(16px, 4vw, 40px); }
 
 /* barra */
-.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); }
+/* fixed (no sticky) + espacio reservado en el body: se ve igual, pero en el celular un header sticky
+   salía en blanco o en su sitio sin scroll dentro de la captura del cambio de tema */
+.bar { position: fixed; top: 0; left: 0; right: 0; z-index: 20; padding-top: env(safe-area-inset-top, 0px); background: var(--bg); border-bottom: 1px solid var(--line); }
+body { padding-top: calc(61px + env(safe-area-inset-top, 0px)); }
 /* cristal: deja ver la carta difuminada al pasar por debajo */
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .bar { background: color-mix(in srgb, var(--bg) 68%, transparent); -webkit-backdrop-filter: blur(20px) saturate(170%); backdrop-filter: blur(20px) saturate(170%);
@@ -223,14 +222,9 @@ dialog[open] { animation: rise .5s var(--out); }
   /* la foto queda fija arriba, solo el texto hace scroll y los botones quedan siempre a la mano abajo */
   .sheet { display: flex; flex-direction: column; max-height: 92dvh; }
   .sheet img { flex: none; min-height: 0; height: auto; aspect-ratio: 4/3; max-height: 46dvh; }
-  .sheet .body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 22px 20px 0; gap: 12px; }
-  .sheet .foot { position: sticky; bottom: 0; z-index: 1; margin: auto -20px 0; padding: 10px 20px calc(10px + env(safe-area-inset-bottom, 0px));
-    background: color-mix(in srgb, var(--surface) 94%, transparent); border-top-color: color-mix(in srgb, var(--line) 80%, transparent); }
-  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .sheet .foot { background: color-mix(in srgb, var(--surface) 78%, transparent); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
-  }
-  .nav-dish .arr { width: 36px; height: 36px; } .nav-dish .arr svg { width: 20px; }
-  .nav-dish button { gap: 10px; padding: 2px 0; } .nav-dish b { font-size: 15px; display: block; white-space: nowrap; text-overflow: ellipsis; }
+  .sheet .body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 22px 20px calc(26px + env(safe-area-inset-bottom, 0px)); gap: 12px; }
+  /* en el celular se cambia de plato deslizando a los lados: sin flechas */
+  .sheet .foot { display: none; }
   dialog { width: 100%; max-width: 100%; margin: auto 0 0; max-height: 92dvh; overflow: hidden; border-radius: 18px 18px 0 0; box-shadow: 0 -12px 40px rgba(0,0,0,.45); will-change: transform; }
   dialog[open] { animation: sheet-up .4s cubic-bezier(.2,.85,.25,1); }
   .grab { display: block; position: absolute; top: 0; left: 0; right: 0; height: 30px; z-index: 2; touch-action: none; }
@@ -638,9 +632,7 @@ function toggleThemeFrom(button) {
   const root = document.documentElement;
   root.style.setProperty("--vt-x", x + "px");
   root.style.setProperty("--vt-y", y + "px");
-  root.style.setProperty("--vt-r", Math.ceil(radius) + "px");
-  root.style.setProperty("--vt-by", y - document.querySelector(".bar").getBoundingClientRect().top + "px");
-  root.classList.add("vt-theme");
+  root.style.setProperty("--vt-r", Math.ceil(radius) + "px");  root.classList.add("vt-theme");
   const t = document.startViewTransition(apply);
   t.ready.catch(() => {}); // si la pestaña se oculta, el navegador la cancela: el tema cambia igual, sin animación
   t.finished.finally(() => root.classList.remove("vt-theme"));
