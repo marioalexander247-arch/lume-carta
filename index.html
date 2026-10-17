@@ -239,6 +239,8 @@ footer { margin-top: 64px; border-top: 1px solid var(--line); padding-block: 40p
 footer .wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 28px; }
 footer h4 { margin: 0 0 8px; font: italic 400 20px var(--display); color: var(--ink); }
 footer p { margin: 0; }
+footer a { color: var(--ink); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--flame) 55%, transparent); text-underline-offset: 3px; overflow-wrap: anywhere; }
+footer a:hover { color: var(--flame); }
 .legal { grid-column: 1 / -1; font-size: 12.5px; border-top: 1px solid var(--line); padding-top: 18px; }
 
 /* llama de vela: solo transform y opacity */
@@ -340,7 +342,8 @@ footer p { margin: 0; }
   <div class="wrap">
     <div><h4>Lume</h4><p>Cucina italiana a lume di candela.<br>Cocina abierta, mesas a la luz de las velas.</p></div>
     <div><h4>Horario</h4><p>Martes a jueves · 12:00 – 22:00<br>Viernes y sábado · 12:00 – 23:30<br>Domingo · 12:00 – 17:00</p></div>
-    <div><h4>Reservas</h4><p>Grupos y celebraciones con menú especial.<br>Pregunta por nuestra carta de vinos.</p></div>
+    <div><h4>Ubicación</h4><p><a href="https://www.google.com/maps/search/?api=1&amp;query=Av.%205A%20Norte%20%2345N-23%2C%20La%20Flora%2C%20Cali" target="_blank" rel="noopener">Av. 5A Norte # 45N-23<br>Barrio La Flora, Cali</a></p></div>
+    <div><h4>Reservas</h4><p><a href="tel:+573058982393">305 898 2393</a><br><a href="tel:+573046125317">304 612 5317</a><br><a href="mailto:lumecucinaitaliana@gmail.com">lumecucinaitaliana@gmail.com</a><br>Grupos y celebraciones con menú especial.</p></div>
     <p class="legal">Precios en pesos colombianos. Si tienes alguna alergia o restricción alimentaria, avísale a tu mesero antes de ordenar. Las fotografías son de referencia.</p>
   </div>
 </footer>
